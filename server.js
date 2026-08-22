@@ -4,7 +4,7 @@ const path = require('path');
 const pg = require('pg');
 const { Pool } = pg;
 
-// Configuração atualizada com a senha correta 'postgres'
+// Configuração do Banco de Dados PostgreSQL
 const pool = new Pool({
     user: 'postgres',
     host: 'localhost',
@@ -44,11 +44,26 @@ const server = http.createServer(async (req, res) => {
                 }
 
                 const user = result.rows[0];
+                let userModules = [];
+                try {
+                    userModules = user.modules ? JSON.parse(user.modules) : [];
+                } catch {
+                    userModules = [];
+                }
+
+                // Se for publi e não tiver módulos definidos, atribui padrão (dashboard e producao-cientifica)
+                if (user.role === 'publi' && userModules.length === 0) {
+                    userModules = ['dashboard', 'producao-cientifica'];
+                }
+
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({
                     id: user.id,
-                    username: user.email,
-                    role: 'admin'
+                    username: user.nome,
+                    nome_completo: user.nome,
+                    role: user.role || 'admin',
+                    can_edit_db: user.role === 'admin',
+                    modules: user.role === 'admin' ? [] : userModules
                 }));
             } catch (err) {
                 console.error(err);
