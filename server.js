@@ -13,6 +13,53 @@ const pool = new Pool({
     port: 5432,
 });
 
+// ============================================================
+// Módulo: Produção Científica » Publicações (mock data)
+// ============================================================
+let publicacoes = [
+    {
+        id: 1,
+        titulo: 'Smart Grid Analytics: Detecção de Perdas não Técnicas em Redes de Distribuição Usando Machine Learning',
+        natureza: 'Journal',
+        status: 'Publicado',
+        veiculo: 'IEEE Transactions on Smart Grid',
+        projeto: 'P021 — Sistema de Medição Inteligente',
+        conformidade_ib: 'Sim',
+        ano: 2024
+    },
+    {
+        id: 2,
+        titulo: 'Otimização do Fluxo de Potência em Microrredes com Geração Solar Fotovoltaica e Armazenamento',
+        natureza: 'Conferência',
+        status: 'Aceito',
+        veiculo: 'IEEE PES Innovative Smart Grid Technologies (ISGT)',
+        projeto: 'P018 — Microrredes Urbanas',
+        conformidade_ib: 'Pendente',
+        ano: 2025
+    },
+    {
+        id: 3,
+        titulo: 'IoT aplicado à Telemedição: Revisão Sistemática e Perspectivas para o Setor Elétrico Brasileiro',
+        natureza: 'Periódico',
+        status: 'Em Revisão',
+        veiculo: 'Revista Controle & Automação',
+        projeto: 'P025 — Infraestrutura de Medição IoT',
+        conformidade_ib: 'Não',
+        ano: 2025
+    },
+    {
+        id: 4,
+        titulo: 'Metodologia de Avaliação de Conformidade ANEEL para Projetos de P&D com Base Patrimonial',
+        natureza: 'Journal',
+        status: 'Submetido',
+        veiculo: 'Journal of Control, Automation and Electrical Systems',
+        projeto: 'P032 — Governança de P&D ANEEL',
+        conformidade_ib: 'Pendente',
+        ano: 2023
+    }
+];
+let proximoIdPublicacao = publicacoes.length + 1;
+
 const server = http.createServer(async (req, res) => {
     // CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -78,6 +125,76 @@ const server = http.createServer(async (req, res) => {
     if (req.url === '/gestaoibii/api/auth/me' && req.method === 'GET') {
         res.writeHead(401, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ detail: 'Não autenticado' }));
+        return;
+    }
+
+    // ============================================================
+    // Módulo: Produção Científica » Publicações
+    // ============================================================
+    const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+    const pathname = parsedUrl.pathname;
+
+    // GET /gestaoibii/api/publicacoes — listagem (filtros opcionais: ?ano=&status=)
+    if (pathname === '/gestaoibii/api/publicacoes' && req.method === 'GET') {
+        let lista = publicacoes;
+        const ano = parsedUrl.searchParams.get('ano');
+        const status = parsedUrl.searchParams.get('status');
+        if (ano) lista = lista.filter(p => String(p.ano) === ano);
+        if (status) lista = lista.filter(p => p.status.toLowerCase() === status.toLowerCase());
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(lista));
+        return;
+    }
+
+    // POST /gestaoibii/api/publicacoes — cadastro de nova publicação
+    if (pathname === '/gestaoibii/api/publicacoes' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => { body += chunk; });
+        req.on('end', () => {
+            try {
+                const dados = JSON.parse(body);
+                const camposObrigatorios = ['titulo', 'natureza', 'status', 'veiculo', 'projeto', 'conformidade_ib'];
+                const faltando = camposObrigatorios.filter(c => !dados[c] || !String(dados[c]).trim());
+                if (faltando.length > 0) {
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ detail: `Campos obrigatórios ausentes: ${faltando.join(', ')}` }));
+                    return;
+                }
+                const ano = parseInt(dados.ano, 10);
+                const nova = {
+                    id: proximoIdPublicacao++,
+                    titulo: String(dados.titulo).trim(),
+                    natureza: String(dados.natureza).trim(),
+                    status: String(dados.status).trim(),
+                    veiculo: String(dados.veiculo).trim(),
+                    projeto: String(dados.projeto).trim(),
+                    conformidade_ib: String(dados.conformidade_ib).trim(),
+                    ano: isNaN(ano) ? new Date().getFullYear() : ano
+                };
+                publicacoes.push(nova);
+                res.writeHead(201, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify(nova));
+            } catch (err) {
+                console.error(err);
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ detail: 'Corpo da requisição inválido' }));
+            }
+        });
+        return;
+    }
+
+    // Rota amigável do módulo: /producao-cientifica e /producao-cientifica/publicacoes
+    if (pathname === '/producao-cientifica' || pathname === '/producao-cientifica/' || pathname === '/producao-cientifica/publicacoes') {
+        const paginaPath = path.join(__dirname, 'modulos', 'publicacoes', 'index.html');
+        fs.readFile(paginaPath, (error, content) => {
+            if (error) {
+                res.writeHead(404, { 'Content-Type': 'text/html' });
+                res.end('<h1>404 Not Found</h1>');
+            } else {
+                res.writeHead(200, { 'Content-Type': 'text/html' });
+                res.end(content);
+            }
+        });
         return;
     }
 

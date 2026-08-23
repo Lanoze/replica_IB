@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="/gestaoibii/logo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Publicações · Produção Científica — Gestão IB</title>
+  <link rel="stylesheet" href="/modulos/publicacoes/style.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar__inner">
+      <div class="brand">
+        <img src="/gestaoibii/logo.png" alt="INESC P&D Brasil" />
+        <span>Gestão IB</span>
+      </div>
+      <nav class="breadcrumb" aria-label="Trilha de navegação">
+        <a href="/">Início</a>
+        <span aria-hidden="true">/</span>
+        <span>Produção Científica</span>
+        <span aria-hidden="true">/</span>
+        <strong>Publicações</strong>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="page-header">
+      <div class="page-header__titles">
+        <h1>Publicações</h1>
+        <p>Catálogo de artigos científicos, journals e periódicos publicados pelo INESC P&amp;D Brasil.</p>
+      </div>
+      <div class="page-header__actions">
+        <div class="filter">
+          <label for="filtro-ano">Ano</label>
+          <select id="filtro-ano">
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="filter">
+          <label for="filtro-status">Status</label>
+          <select id="filtro-status">
+            <option value="">Todos</option>
+            <option value="Publicado">Publicado</option>
+            <option value="Aceito">Aceito</option>
+            <option value="Em Revisão">Em Revisão</option>
+            <option value="Submetido">Submetido</option>
+          </select>
+        </div>
+        <button type="button" id="btn-nova-publicacao" class="btn btn--primary">+ Nova Publicação</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Título &amp; Natureza</th>
+              <th scope="col">Status</th>
+              <th scope="col">Periódico / Veículo</th>
+              <th scope="col">Projeto Relacionado</th>
+              <th scope="col">Conformidade (IB)</th>
+              <th scope="col" class="table__col-ano">Ano</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-publicacoes"></tbody>
+        </table>
+      </div>
+      <footer class="card__footer" id="contador-registros"></footer>
+    </section>
+
+  </main>
+
+  <!-- Modal: Nova Publicação -->
+  <div class="modal-overlay" id="modal-overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+      <header class="modal__header">
+        <h2 id="modal-titulo">Nova Publicação</h2>
+        <button type="button" class="modal__close" id="btn-fechar-modal" aria-label="Fechar">&times;</button>
+      </header>
+      <form id="form-publicacao" novalidate>
+        <div class="form-grid">
+          <div class="form-field form-field--full">
+            <label for="campo-titulo">Título *</label>
+            <input type="text" id="campo-titulo" name="titulo" placeholder="Título do artigo" required />
+          </div>
+          <div class="form-field">
+            <label for="campo-natureza">Natureza *</label>
+            <select id="campo-natureza" name="natureza" required>
+              <option value="" disabled selected>Selecione…</option>
+              <option value="Journal">Journal</option>
+              <option value="Conferência">Conferência</option>
+              <option value="Periódico">Periódico</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="campo-status">Status *</label>
+            <select id="campo-status" name="status" required>
+              <option value="" disabled selected>Selecione…</option>
+              <option value="Publicado">Publicado</option>
+              <option value="Submetido">Submetido</option>
+              <option value="Em Revisão">Em Revisão</option>
+              <option value="Aceito">Aceito</option>
+            </select>
+          </div>
+          <div class="form-field form-field--full">
+            <label for="campo-veiculo">Periódico / Veículo *</label>
+            <input type="text" id="campo-veiculo" name="veiculo" placeholder="Nome da revista ou evento científico" required />
+          </div>
+          <div class="form-field">
+            <label for="campo-projeto">Projeto Relacionado *</label>
+            <input type="text" id="campo-projeto" name="projeto" placeholder="Ex.: P021 — Medição Inteligente" required />
+          </div>
+          <div class="form-field">
+            <label for="campo-conformidade">Conformidade (IB) *</label>
+            <select id="campo-conformidade" name="conformidade_ib" required>
+              <option value="" disabled selected>Selecione…</option>
+              <option value="Sim">Sim</option>
+              <option value="Não">Não</option>
+              <option value="Pendente">Pendente</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="campo-ano">Ano *</label>
+            <input type="number" id="campo-ano" name="ano" min="1990" max="2100" step="1" placeholder="2025" required />
+          </div>
+        </div>
+        <p class="form-error" id="form-erro" hidden></p>
+        <footer class="modal__actions">
+          <button type="button" class="btn btn--ghost" id="btn-cancelar">Cancelar</button>
+          <button type="submit" class="btn btn--primary">Salvar Publicação</button>
+        </footer>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script src="/modulos/publicacoes/script.js"></script>
+</body>
+</html>
