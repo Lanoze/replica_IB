@@ -1,14 +1,21 @@
 /* ============================================================
-   Integração: aba "Produção Científica" » módulo Publicações
+   Integração: aba "Produção Científica" » módulos
    Carregado pela pagina.html junto com a SPA compilada.
-   Intercepta o clique na aba e exibe o módulo em um painel
-   sobreposto (iframe), já que a view nativa da SPA não existe.
+   Intercepta o clique na aba e exibe os módulos disponíveis em
+   um painel sobreposto (iframes), já que a view nativa da SPA
+   não existe (chunks ausentes).
    ============================================================ */
 (() => {
   'use strict';
 
   const ALVO = 'Produção Científica';
-  const URL_MODULO = '/producao-cientifica/publicacoes';
+  const MODULOS = [
+    { rotulo: 'Publicações', url: '/producao-cientifica/publicacoes' },
+    { rotulo: 'Produção Acadêmica', url: '/producao-cientifica/producao-academica' },
+    { rotulo: 'Prêmios', url: '/producao-cientifica/premios' },
+    { rotulo: 'Produção Técnica', url: '/producao-cientifica/producao-tecnologica' },
+    { rotulo: 'Outras Produções', url: '/producao-cientifica/producoes-outros' }
+  ];
 
   const css = `
     .pcib-overlay {
@@ -41,16 +48,17 @@
     .pcib-header {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       padding: 12px 16px;
       border-bottom: 1px solid #e2e8f0;
       background: #f8fafc;
+      flex-wrap: wrap;
     }
     .pcib-titulo {
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
       font-size: 0.95rem;
       font-weight: 700;
-      color: #16406f;
+      color: #4E7020;
       margin-right: auto;
     }
     .pcib-btn {
@@ -61,13 +69,17 @@
       border-radius: 8px;
       border: 1px solid transparent;
       cursor: pointer;
-      transition: background-color .15s ease, color .15s ease;
+      transition: background-color .15s ease, color .15s ease, box-shadow .15s ease;
     }
     .pcib-btn--modulo {
-      background-color: #1e56a0;
+      background-color: #89BE30;
       color: #ffffff;
     }
-    .pcib-btn--modulo:hover { background-color: #16406f; }
+    .pcib-btn--modulo:hover { background-color: #6E9A26; }
+    .pcib-btn--modulo[aria-pressed="true"] {
+      background-color: #6E9A26;
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45);
+    }
     .pcib-btn--fechar {
       background: transparent;
       color: #64748b;
@@ -77,11 +89,27 @@
       padding: 4px 10px;
     }
     .pcib-btn--fechar:hover { color: #0f172a; background: #f1f5f9; }
-    .pcib-conteudo {
+    .pcib-corpo {
+      position: relative;
       flex: 1;
-      border: none;
+      background: #ffffff;
+    }
+    .pcib-conteudo {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
+      border: none;
+    }
+    .pcib-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      font-size: 0.9rem;
+      color: #64748b;
     }
     @media (max-width: 720px) {
       .pcib-overlay { padding: 0; }
@@ -89,13 +117,20 @@
     }
   `;
 
+  let overlay, corpo, placeholder;
+  const frames = new Map();
+
   function criarEstilo() {
     const style = document.createElement('style');
     style.textContent = css;
     document.head.appendChild(style);
   }
 
-  let overlay, iframe, carregado = false;
+  function montarBotoes() {
+    return MODULOS.map(m =>
+      `<button type="button" class="pcib-btn pcib-btn--modulo" data-url="${m.url}" aria-pressed="false">${m.rotulo}</button>`
+    ).join('');
+  }
 
   function criarPainel() {
     overlay = document.createElement('div');
@@ -105,16 +140,23 @@
       <div class="pcib-panel" role="dialog" aria-modal="true" aria-label="Produção Científica">
         <div class="pcib-header">
           <span class="pcib-titulo">Produção Científica</span>
-          <button type="button" class="pcib-btn pcib-btn--modulo">Publicações</button>
+          ${montarBotoes()}
           <button type="button" class="pcib-btn pcib-btn--fechar" aria-label="Fechar">&times;</button>
         </div>
-        <iframe class="pcib-conteudo" title="Módulo Publicações"></iframe>
+        <div class="pcib-corpo">
+          <p class="pcib-placeholder">Selecione um dos módulos acima para visualizar.</p>
+        </div>
       </div>`;
 
-    iframe = overlay.querySelector('iframe');
+    corpo = overlay.querySelector('.pcib-corpo');
+    placeholder = overlay.querySelector('.pcib-placeholder');
 
-    overlay.querySelector('.pcib-btn--modulo').addEventListener('click', abrirModulo);
     overlay.querySelector('.pcib-btn--fechar').addEventListener('click', fecharPainel);
+
+    overlay.querySelector('.pcib-header').addEventListener('click', (e) => {
+      const btn = e.target.closest('.pcib-btn--modulo');
+      if (btn) mostrarModulo(btn.dataset.url, btn);
+    });
 
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) fecharPainel();
@@ -123,18 +165,32 @@
     document.body.appendChild(overlay);
   }
 
-  function abrirPainel() {
-    if (!overlay) criarPainel();
-    abrirModulo();
-    overlay.hidden = false;
-    document.body.style.overflow = 'hidden';
+  function obterFrame(url) {
+    if (!frames.has(url)) {
+      const f = document.createElement('iframe');
+      f.className = 'pcib-conteudo';
+      f.title = url;
+      f.src = url;
+      frames.set(url, f);
+      corpo.appendChild(f);
+    }
+    return frames.get(url);
   }
 
-  function abrirModulo() {
-    if (!carregado) {
-      iframe.src = URL_MODULO;
-      carregado = true;
-    }
+  function mostrarModulo(url, btn) {
+    placeholder.hidden = true;
+    frames.forEach(f => { f.style.display = 'none'; });
+    obterFrame(url).style.display = 'block';
+
+    overlay.querySelectorAll('.pcib-btn--modulo').forEach(b =>
+      b.setAttribute('aria-pressed', String(b === btn))
+    );
+  }
+
+  function abrirPainel() {
+    if (!overlay) criarPainel();
+    overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
   }
 
   function fecharPainel() {

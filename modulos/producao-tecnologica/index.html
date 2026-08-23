@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="/gestaoibii/logo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Produção Técnica e Tecnológica · Produção Científica — Gestão IB</title>
+  <link rel="stylesheet" href="/modulos/producao-tecnologica/style.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar__inner">
+      <div class="brand">
+        <img src="/gestaoibii/logo.png" alt="INESC P&D Brasil" />
+        <span>Gestão IB</span>
+      </div>
+      <nav class="breadcrumb" aria-label="Trilha de navegação">
+        <a href="/">Início</a>
+        <span aria-hidden="true">/</span>
+        <span>Produção Científica</span>
+        <span aria-hidden="true">/</span>
+        <strong>Produção Técnica e Tecnológica</strong>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="page-header">
+      <div class="page-header__titles">
+        <h1>Produção Técnica e Tecnológica</h1>
+        <p>Gestão de patentes, registros de software, protótipos e produtos tecnológicos desenvolvidos nos projetos do INESC P&amp;D Brasil.</p>
+      </div>
+      <div class="page-header__actions">
+        <div class="filter">
+          <label for="filtro-ano">Ano</label>
+          <select id="filtro-ano">
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="filter">
+          <label for="filtro-tipo">Tipo / TRL</label>
+          <select id="filtro-tipo">
+            <option value="">Todos</option>
+            <option value="Patente">Patente</option>
+            <option value="Registro de Software">Registro de Software</option>
+            <option value="Protótipo">Protótipo</option>
+            <option value="Produto Tecnológico">Produto Tecnológico</option>
+          </select>
+        </div>
+        <button type="button" id="btn-nova-producao" class="btn btn--primary">+ Nova Produção</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Título &amp; Número</th>
+              <th scope="col">Tipo / TRL</th>
+              <th scope="col">Autores / Inventores</th>
+              <th scope="col">Instituição</th>
+              <th scope="col">Projeto Relacionado</th>
+              <th scope="col">Conformidade (IB)</th>
+              <th scope="col" class="table__col-ano">Ano</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-producoes"></tbody>
+        </table>
+      </div>
+      <footer class="card__footer" id="contador-registros"></footer>
+    </section>
+
+  </main>
+
+  <!-- Modal: Nova Produção Técnica/Tecnológica -->
+  <div class="modal-overlay" id="modal-overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+      <header class="modal__header">
+        <h2 id="modal-titulo">Nova Produção Técnica e Tecnológica</h2>
+        <button type="button" class="modal__close" id="btn-fechar-modal" aria-label="Fechar">&times;</button>
+      </header>
+      <form id="form-producao" novalidate>
+        <div class="form-grid">
+          <div class="form-field form-field--full">
+            <label for="campo-titulo">Título *</label>
+            <input type="text" id="campo-titulo" name="titulo" placeholder="Título da patente, registro, protótipo ou produto" required />
+          </div>
+          <div class="form-field form-field--full">
+            <label for="campo-numero">Número</label>
+            <input type="text" id="campo-numero" name="numero" placeholder="Nº do pedido/registro (opcional)" />
+          </div>
+          <div class="form-field">
+            <label for="campo-tipo">Tipo *</label>
+            <select id="campo-tipo" name="tipo" required>
+              <option value="" disabled selected>Selecione…</option>
+              <option value="Patente">Patente</option>
+              <option value="Registro de Software">Registro de Software</option>
+              <option value="Protótipo">Protótipo</option>
+              <option value="Produto Tecnológico">Produto Tecnológico</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="campo-trl">TRL (1–9)</label>
+            <input type="number" id="campo-trl" name="trl" min="1" max="9" step="1" placeholder="Ex.: 6" />
+          </div>
+          <div class="form-field form-field--full">
+            <label for="campo-autores">Autores / Inventores *</label>
+            <input type="text" id="campo-autores" name="autores" placeholder="Nomes dos autores ou inventores" required />
+          </div>
+          <div class="form-field form-field--full">
+            <label for="campo-instituicao">Instituição *</label>
+            <input type="text" id="campo-instituicao" name="instituicao" placeholder="Instituição responsável pelo depósito/registro" required />
+          </div>
+          <div class="form-field">
+            <label for="campo-projeto">Projeto Relacionado *</label>
+            <input type="text" id="campo-projeto" name="projeto" placeholder="Ex.: P021 — Medição Inteligente" required />
+          </div>
+          <div class="form-field">
+            <label for="campo-conformidade">Conformidade (IB) *</label>
+            <select id="campo-conformidade" name="conformidade_ib" required>
+              <option value="" disabled selected>Selecione…</option>
+              <option value="Sim">Sim</option>
+              <option value="Não">Não</option>
+              <option value="Pendente">Pendente</option>
+            </select>
+          </div>
+          <div class="form-field form-field--full">
+            <label for="campo-ano">Ano *</label>
+            <input type="number" id="campo-ano" name="ano" min="1990" max="2100" step="1" placeholder="2025" required />
+          </div>
+        </div>
+        <p class="form-error" id="form-erro" hidden></p>
+        <footer class="modal__actions">
+          <button type="button" class="btn btn--ghost" id="btn-cancelar">Cancelar</button>
+          <button type="submit" class="btn btn--primary">Salvar Produção</button>
+        </footer>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script src="/modulos/producao-tecnologica/script.js"></script>
+</body>
+</html>
