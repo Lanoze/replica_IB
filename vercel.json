@@ -1,6 +1,9 @@
 {
     "version": 2,
+    "installCommand": "npm install",
+    "buildCommand": "echo build ok",
     "outputDirectory": ".",
+    "framework": null,
     "rewrites": [
         { "source": "/gestaoibii/api/auth/login", "destination": "/api/auth/login" },
         { "source": "/gestaoibii/api/auth/me", "destination": "/api/auth/me" },
