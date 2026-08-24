@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const pg = require('pg');
 const { Pool } = pg;
+const { inicializarBanco } = require('./db-setup');
 
 // Configuração do Banco de Dados PostgreSQL
 const pool = new Pool({
@@ -51,8 +52,9 @@ const server = http.createServer(async (req, res) => {
                     userModules = [];
                 }
 
-                if (user.role === 'publi' && userModules.length === 0) {
-                    userModules = ['dashboard', 'producao-cientifica'];
+                //Usuário não admin sem módulo definido só tem acesso ao dashboard
+                if (user.role !== 'admin' && userModules.length === 0) {
+                    userModules = ['dashboard'];
                 }
 
                 res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -829,9 +831,13 @@ const server = http.createServer(async (req, res) => {
 });
 
 const PORT = 3000;
-server.listen(PORT, () => {
-    console.log(`====================================================`);
-    console.log(`Servidor rodando com sucesso!`);
-    console.log(`Acesse no navegador: http://localhost:${PORT}/pagina.html`);
-    console.log(`====================================================`);
+
+// Inicializa o banco automaticamente antes de subir o servidor
+inicializarBanco().then(() => {
+    server.listen(PORT, () => {
+        console.log(`====================================================`);
+        console.log(`Servidor rodando com sucesso!`);
+        console.log(`Acesse no navegador: http://localhost:${PORT}/pagina.html`);
+        console.log(`====================================================`);
+    });
 });
