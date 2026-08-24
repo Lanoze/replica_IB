@@ -5,7 +5,7 @@
   <link rel="icon" type="image/png" href="/gestaoibii/logo.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Produção Acadêmica · Produção Científica — Gestão IB</title>
-  <link rel="stylesheet" href="/modulos/producao-academica/style.css" />
+  <link rel="stylesheet" href="/modulos/publicacoes/style.css" />
 </head>
 <body>
 
@@ -63,6 +63,7 @@
               <th scope="col">Orientador</th>
               <th scope="col">Projeto Relacionado</th>
               <th scope="col" class="table__col-ano">Ano</th>
+              <th scope="col" class="table__col-acoes">Ações</th>
             </tr>
           </thead>
           <tbody id="tabela-trabalhos"></tbody>
@@ -73,7 +74,7 @@
 
   </main>
 
-  <!-- Modal: Novo Trabalho Acadêmico -->
+  <!-- Modal: Novo/Editar Trabalho Acadêmico -->
   <div class="modal-overlay" id="modal-overlay" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
       <header class="modal__header">
@@ -119,7 +120,7 @@
         <p class="form-error" id="form-erro" hidden></p>
         <footer class="modal__actions">
           <button type="button" class="btn btn--ghost" id="btn-cancelar">Cancelar</button>
-          <button type="submit" class="btn btn--primary">Salvar Trabalho</button>
+          <button type="submit" class="btn btn--primary" id="btn-salvar-modal">Salvar Trabalho</button>
         </footer>
       </form>
     </div>

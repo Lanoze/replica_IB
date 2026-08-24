@@ -5,7 +5,7 @@
   <link rel="icon" type="image/png" href="/gestaoibii/logo.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Produção Técnica e Tecnológica · Produção Científica — Gestão IB</title>
-  <link rel="stylesheet" href="/modulos/producao-tecnologica/style.css" />
+  <link rel="stylesheet" href="/modulos/publicacoes/style.css" />
 </head>
 <body>
 
@@ -30,7 +30,7 @@
     <section class="page-header">
       <div class="page-header__titles">
         <h1>Produção Técnica e Tecnológica</h1>
-        <p>Gestão de patentes, registros de software, protótipos e produtos tecnológicos desenvolvidos nos projetos do INESC P&amp;D Brasil.</p>
+        <p>Patentes, registros de software, protótipos e produtos tecnológicos desenvolvidos nos projetos do INESC P&amp;D Brasil.</p>
       </div>
       <div class="page-header__actions">
         <div class="filter">
@@ -40,7 +40,7 @@
           </select>
         </div>
         <div class="filter">
-          <label for="filtro-tipo">Tipo / TRL</label>
+          <label for="filtro-tipo">Tipo</label>
           <select id="filtro-tipo">
             <option value="">Todos</option>
             <option value="Patente">Patente</option>
@@ -65,6 +65,7 @@
               <th scope="col">Projeto Relacionado</th>
               <th scope="col">Conformidade (IB)</th>
               <th scope="col" class="table__col-ano">Ano</th>
+              <th scope="col" class="table__col-acoes">Ações</th>
             </tr>
           </thead>
           <tbody id="tabela-producoes"></tbody>
@@ -75,7 +76,7 @@
 
   </main>
 
-  <!-- Modal: Nova Produção Técnica/Tecnológica -->
+  <!-- Modal: Nova/Editar Produção Técnica/Tecnológica -->
   <div class="modal-overlay" id="modal-overlay" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
       <header class="modal__header">
@@ -135,7 +136,7 @@
         <p class="form-error" id="form-erro" hidden></p>
         <footer class="modal__actions">
           <button type="button" class="btn btn--ghost" id="btn-cancelar">Cancelar</button>
-          <button type="submit" class="btn btn--primary">Salvar Produção</button>
+          <button type="submit" class="btn btn--primary" id="btn-salvar-modal">Salvar Produção</button>
         </footer>
       </form>
     </div>

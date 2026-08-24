@@ -5,7 +5,7 @@
   <link rel="icon" type="image/png" href="/gestaoibii/logo.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Prêmios · Produção Científica — Gestão IB</title>
-  <link rel="stylesheet" href="/modulos/premios/style.css" />
+  <link rel="stylesheet" href="/modulos/publicacoes/style.css" />
 </head>
 <body>
 
@@ -64,6 +64,7 @@
               <th scope="col">Projeto Relacionado</th>
               <th scope="col">Conformidade (IB)</th>
               <th scope="col" class="table__col-data">Data Concessão</th>
+              <th scope="col" class="table__col-acoes">Ações</th>
             </tr>
           </thead>
           <tbody id="tabela-premios"></tbody>
@@ -74,7 +75,7 @@
 
   </main>
 
-  <!-- Modal: Novo Prêmio -->
+  <!-- Modal: Novo/Editar Prêmio -->
   <div class="modal-overlay" id="modal-overlay" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
       <header class="modal__header">
@@ -129,7 +130,7 @@
         <p class="form-error" id="form-erro" hidden></p>
         <footer class="modal__actions">
           <button type="button" class="btn btn--ghost" id="btn-cancelar">Cancelar</button>
-          <button type="submit" class="btn btn--primary">Salvar Prêmio</button>
+          <button type="submit" class="btn btn--primary" id="btn-salvar-modal">Salvar Prêmio</button>
         </footer>
       </form>
     </div>
