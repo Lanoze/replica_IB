@@ -1,11 +1,6 @@
 {
     "version": 2,
-    "builds": [
-        {
-            "src": "api/**/*.js",
-            "use": "@vercel/node"
-        }
-    ],
+    "outputDirectory": ".",
     "rewrites": [
         { "source": "/gestaoibii/api/auth/login", "destination": "/api/auth/login" },
         { "source": "/gestaoibii/api/auth/me", "destination": "/api/auth/me" },
@@ -25,7 +20,7 @@
         { "source": "/producao-cientifica/producoes-outros", "destination": "/modulos/producoes-outros/index.html" },
         { "source": "/producao-cientifica/publicacoes", "destination": "/modulos/publicacoes/index.html" },
         { "source": "/producao-cientifica", "destination": "/modulos/publicacoes/index.html" },
-        { "source": "/pagina.html", "destination": "/pagina.html" }
+        { "source": "/", "destination": "/pagina.html" }
     ],
     "headers": [
         {
