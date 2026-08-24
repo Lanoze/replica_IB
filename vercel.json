@@ -1,0 +1,40 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "api/**/*.js",
+            "use": "@vercel/node"
+        }
+    ],
+    "rewrites": [
+        { "source": "/gestaoibii/api/auth/login", "destination": "/api/auth/login" },
+        { "source": "/gestaoibii/api/auth/me", "destination": "/api/auth/me" },
+        { "source": "/gestaoibii/api/publicacoes/:id", "destination": "/api/publicacoes?id=:id" },
+        { "source": "/gestaoibii/api/publicacoes", "destination": "/api/publicacoes" },
+        { "source": "/gestaoibii/api/producao-academica/:id", "destination": "/api/producao-academica?id=:id" },
+        { "source": "/gestaoibii/api/producao-academica", "destination": "/api/producao-academica" },
+        { "source": "/gestaoibii/api/premios/:id", "destination": "/api/premios?id=:id" },
+        { "source": "/gestaoibii/api/premios", "destination": "/api/premios" },
+        { "source": "/gestaoibii/api/producao-tecnologica/:id", "destination": "/api/producao-tecnologica?id=:id" },
+        { "source": "/gestaoibii/api/producao-tecnologica", "destination": "/api/producao-tecnologica" },
+        { "source": "/gestaoibii/api/producoes-outros/:id", "destination": "/api/producoes-outros?id=:id" },
+        { "source": "/gestaoibii/api/producoes-outros", "destination": "/api/producoes-outros" },
+        { "source": "/producao-cientifica/producao-academica", "destination": "/modulos/producao-academica/index.html" },
+        { "source": "/producao-cientifica/premios", "destination": "/modulos/premios/index.html" },
+        { "source": "/producao-cientifica/producao-tecnologica", "destination": "/modulos/producao-tecnologica/index.html" },
+        { "source": "/producao-cientifica/producoes-outros", "destination": "/modulos/producoes-outros/index.html" },
+        { "source": "/producao-cientifica/publicacoes", "destination": "/modulos/publicacoes/index.html" },
+        { "source": "/producao-cientifica", "destination": "/modulos/publicacoes/index.html" },
+        { "source": "/pagina.html", "destination": "/pagina.html" }
+    ],
+    "headers": [
+        {
+            "source": "/api/(.*)",
+            "headers": [
+                { "key": "Access-Control-Allow-Origin", "value": "*" },
+                { "key": "Access-Control-Allow-Methods", "value": "GET,POST,PUT,DELETE,OPTIONS" },
+                { "key": "Access-Control-Allow-Headers", "value": "Content-Type,Authorization,X-User-Id" }
+            ]
+        }
+    ]
+}
