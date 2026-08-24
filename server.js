@@ -18,7 +18,7 @@ const server = http.createServer(async (req, res) => {
     // CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-User-Id');
 
     if (req.method === 'OPTIONS') {
         res.writeHead(204);
@@ -52,9 +52,8 @@ const server = http.createServer(async (req, res) => {
                     userModules = [];
                 }
 
-                //Usuário não admin sem módulo definido só tem acesso ao dashboard
-                if (user.role !== 'admin' && userModules.length === 0) {
-                    userModules = ['dashboard'];
+                if (user.role === 'publi' && userModules.length === 0) {
+                    userModules = ['dashboard', 'producao-cientifica'];
                 }
 
                 res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -75,7 +74,43 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
-    if (req.url === '/gestaoibii/api/auth/me' && req.method === 'GET') {
+    // Endpoint /me (retorna o usuário logado com base no ID passado no header ou query)
+    if (req.url.startsWith('/gestaoibii/api/auth/me') && req.method === 'GET') {
+        const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+        const userId = parsedUrl.searchParams.get('id') || req.headers['x-user-id'];
+
+        if (userId) {
+            try {
+                const result = await pool.query('SELECT * FROM usuarios WHERE id = $1 AND ativo = true', [userId]);
+                if (result.rows.length > 0) {
+                    const user = result.rows[0];
+                    let userModules = [];
+                    try {
+                        userModules = user.modules ? JSON.parse(user.modules) : [];
+                    } catch {
+                        userModules = [];
+                    }
+
+                    if (user.role === 'publi' && userModules.length === 0) {
+                        userModules = ['dashboard', 'producao-cientifica'];
+                    }
+
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({
+                        id: user.id,
+                        username: user.nome,
+                        nome_completo: user.nome,
+                        role: user.role || 'admin',
+                        can_edit_db: user.role === 'admin',
+                        modules: user.role === 'admin' ? [] : userModules
+                    }));
+                    return;
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
         res.writeHead(401, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ detail: 'Não autenticado' }));
         return;

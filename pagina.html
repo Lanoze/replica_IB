@@ -11,6 +11,36 @@
     <link rel="modulepreload" crossorigin href="/gestaoibii/assets/vendor-pdf-DJnvLSwA.js">
     <link rel="modulepreload" crossorigin href="/gestaoibii/assets/vendor-react-core-D33I4luG.js">
     <link rel="stylesheet" crossorigin href="/gestaoibii/assets/index-CA9MLW9f.css">
+    <script>
+      // Intercepta requisições de login e /me para persistir a sessão correta no navegador
+      const originalFetch = window.fetch;
+      window.fetch = async function(input, init) {
+        const url = typeof input === 'string' ? input : (input && input.url ? input.url : '');
+        
+        if (url.includes('/gestaoibii/api/auth/login') && init && init.method === 'POST') {
+          const response = await originalFetch(input, init);
+          if (response.ok) {
+            const clone = response.clone();
+            try {
+              const data = await clone.json();
+              if (data && data.id) {
+                localStorage.setItem('replica_ib_user_id', data.id);
+              }
+            } catch (e) {}
+          }
+          return response;
+        }
+
+        if (url.includes('/gestaoibii/api/auth/me')) {
+          const userId = localStorage.getItem('replica_ib_user_id');
+          if (userId) {
+            return originalFetch(`/gestaoibii/api/auth/me?id=${userId}`, init);
+          }
+        }
+
+        return originalFetch(input, init);
+      };
+    </script>
   </head>
   <body>
     <div id="root"></div>
