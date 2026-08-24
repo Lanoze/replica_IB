@@ -1,39 +1,6 @@
-const { Pool } = require('pg');
+const pool = require('./db');
 
 async function inicializarBanco() {
-    // 1. Conectar ao banco padrão 'postgres' para verificar/criar o banco 'replica_ib'
-    const adminPool = new Pool({
-        user: 'postgres',
-        host: 'localhost',
-        database: 'postgres',
-        password: 'postgres',
-        port: 5432,
-    });
-
-    try {
-        const resDb = await adminPool.query("SELECT 1 FROM pg_database WHERE datname = 'replica_ib'");
-        if (resDb.rows.length === 0) {
-            console.log('📦 Banco de dados "replica_ib" não encontrado. Criando automaticamente...');
-            await adminPool.query('CREATE DATABASE replica_ib;');
-            console.log('✅ Banco de dados "replica_ib" criado com sucesso!');
-        }else{
-            console.log('O banco de dados já existia, ele será usado');
-        }
-    } catch (err) {
-        console.error('⚠️ Aviso ao verificar/criar banco de dados:', err.message);
-    } finally {
-        await adminPool.end();
-    }
-
-    // 2. Conectar ao banco 'replica_ib' para verificar/criar tabelas e popular dados
-    const pool = new Pool({
-        user: 'postgres',
-        host: 'localhost',
-        database: 'replica_ib',
-        password: 'postgres',
-        port: 5432,
-    });
-
     try {
         console.log('⚙️ Verificando e criando tabelas necessárias...');
 
@@ -213,8 +180,6 @@ async function inicializarBanco() {
         console.log('✅ Banco de dados e tabelas verificados/configurados com sucesso!');
     } catch (err) {
         console.error('❌ Erro ao configurar tabelas no banco de dados:', err.message);
-    } finally {
-        await pool.end();
     }
 }
 

@@ -1,18 +1,8 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const pg = require('pg');
-const { Pool } = pg;
+const pool = require('./db');
 const { inicializarBanco } = require('./db-setup');
-
-// Configuração do Banco de Dados PostgreSQL
-const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'replica_ib',
-    password: 'postgres',
-    port: 5432,
-});
 
 const server = http.createServer(async (req, res) => {
     // CORS
